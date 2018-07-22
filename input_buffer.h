@@ -1,3 +1,6 @@
+#ifndef INPUT_BUFFER
+#define INPUT_BUFFER
+
 class InputBuffer {
   public:
     std::string buffer;
@@ -7,3 +10,4 @@ class InputBuffer {
     InputBuffer();
 };
 
+#endif  /* INPUT_BUFFER */

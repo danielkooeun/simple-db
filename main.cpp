@@ -1,18 +1,17 @@
-#include <iostream>
-#include <cstdlib>
-#include <string>
-
+#include "setup.h"
 #include "input_buffer.h"
 #include "db_io.h"
 #include "meta_command.h"
 #include "statement.h"
 
 int main(int argc, char* argv[]) {
+  Table* table = new Table();
   InputBuffer* input_buffer = new InputBuffer();
   
   // infinite loop to retrieve user input
   while (true) {
     print_prompt();
+
     std::getline(std::cin, input_buffer->buffer);
     if (input_buffer->buffer.length() <= 0) {
       std::cout << "Error reading input\n";
@@ -29,18 +28,27 @@ int main(int argc, char* argv[]) {
           continue;
       }
     }
-    
+
     Statement statement;
-    switch (prepare_statement(input_buffer, &statement)) {
-      case(PREPARE_SUCCESS):
+    switch(prepare_statement(input_buffer, &statement)) {
+      case (PREPARE_SUCCESS):
         break;
-      case(PREPARE_UNRECOGNIZED_STATEMENT):
-        std::cout << "Unrecognized keywords at start of '" << input_buffer->buffer << "'.\n";
+      case(PREPARE_SYNTAX_ERROR):
+        std::cout << "Syntax error. Could not parse statement.\n";
+        continue;
+      case (PREPARE_UNRECOGNIZED_STATEMENT):
+        std::cout << "Unrecognized keyword at start of '" << input_buffer->buffer << "'.\n";
         continue;
     }
-
-    execute_statement(&statement);
-    std::cout << "Executed.\n";
+    
+    switch (execute_statement(&statement, table)) {
+      case (EXECUTE_SUCCESS):
+        std::cout << "Executed.\n";
+        break;
+      case (EXECUTE_TABLE_FULL):
+        std::cout << "Error: Table full.\n";
+        break;
+    }
   }
   
 }

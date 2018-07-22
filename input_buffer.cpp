@@ -1,4 +1,4 @@
-#include <string>
+#include "setup.h"
 #include "input_buffer.h"
 
 InputBuffer::InputBuffer() {
